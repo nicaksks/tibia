@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { load } from 'cheerio';
+import PlayerData from '../interface/PlayerData';
 
 class Tibia {
 
@@ -18,17 +19,17 @@ class Tibia {
     const { data } = await this._instance.get("/?subtopic=highscores");
     const $ = load(data);
 
-    let name: string[] = [];
-    let level: number[] = [];
-    let experience: number[] = [];
+    const players: PlayerData[] = [];
 
     $('table.TableContent tr').slice(1, 4).each((_, e) => {
-      name.push($(e).find('td:nth-child(2) a').text());
-      level.push(parseInt($(e).find('td:nth-child(5)').text()));
-      experience.push(parseInt($(e).find('td:nth-child(6)').text().replace(/,/g, '')));
+      const player: PlayerData = {
+        name: $(e).find('td:nth-child(2) a').text(),
+        level: parseInt($(e).find('td:nth-child(5)').text()),
+        experience: parseInt($(e).find('td:nth-child(6)').text().replace(/,/g, '')),
+      };
+      players.push(player);
     });
-
-    return { name, level, experience };
+    return players;
   };
 }
 

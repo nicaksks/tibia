@@ -4,45 +4,40 @@ async function api() {
   try {
     const response = await fetch("http://localhost:3000/v1/tibia");
     const { result } = await response.json();
-    const { name, level, experience } = result;
-    show(name, level, experience);
-  } catch(e) {
+    show(result);
+  } catch (e) {
     alert("Api offline.")
     throw new Error("Api offline.");
   };
 }
 
-function show(name, level, experience) {
+function show(result) {
   const playerName = "Dejair Invencivel";
-  const playerIndex = name.indexOf(playerName);
+  let playerIndex = result.findIndex(player => player.name === playerName);
 
-  for (let i = 0; i < name.length; i++) {
-    const diffLevel = level[i] - level[playerIndex];
-    const diffExperience = experience[i] - experience[playerIndex];
-    const isDejair = i === playerIndex;
+  result.forEach((player, i) => {
+    const diffLevel = player.level - result[playerIndex].level;
+    const diffExperience = player.experience - result[playerIndex].experience;
 
     const card = `
       <div class="cards">
         <div class="avatar">
-          <img src="${outfits(name[i])}"><br>
-          ${name[i]}<br> 
-          </div>
-          Ranking: ${i + 1}<br> Level: ${level[i]}<br> Experiência: ${experience[i].toLocaleString()}
+          <img src="${outfits(player.name)}"><br>
+          ${player.name}<br> 
+        </div>
+        Ranking: ${i + 1}<br> Level: ${player.level}<br> Experiência: ${player.experience.toLocaleString()}
     `;
 
-    if (isDejair) {
-      cards.innerHTML += card;
-      continue;
-    }
+    if (i === playerIndex) return cards.innerHTML += card;
 
     const diffInfo = `
-      <hr>Diferença entre ${name[i]} e ${playerName}
+      <hr>Diferença entre ${player.name} e ${playerName}
       <li>Nível: ${diffLevel}<br>
       <li>Experiência: ${diffExperience.toLocaleString()}</li>
     `;
 
     cards.innerHTML += card + diffInfo + '</div>';
-  }
+  });
 }
 
 function outfits(playerName) {
