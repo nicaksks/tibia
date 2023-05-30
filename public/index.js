@@ -24,7 +24,7 @@ function show(name, level, experience) {
     const card = `
       <div class="cards">
         <div class="avatar">
-          <img src="${avatar(name[i])}"><br>
+          <img src="${outfits(name[i])}"><br>
           ${name[i]}<br> 
           </div>
           Ranking: ${i + 1}<br> Level: ${level[i]}<br> Experiência: ${experience[i].toLocaleString()}
@@ -45,16 +45,13 @@ function show(name, level, experience) {
   }
 }
 
-function avatar(playerName) {
-  let avatar = "";
-  if (playerName === "Goraca") {
-    avatar = './imgs/goraca.png';
-  } else if (playerName === "Bobeek") {
-    avatar = "./imgs/bobeek.png";
-  } else {
-    avatar = './imgs/dejair.png'
+function outfits(playerName) {
+  const outfit = {
+    "Goraca": "./imgs/goraca.png",
+    "Bobeek": "./imgs/bobeek.png",
+    "Dejair Invencivel": "./imgs/dejair.png"
   };
-  return avatar;
+  return outfit[playerName];
 };
 
 api();

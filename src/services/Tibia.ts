@@ -14,7 +14,7 @@ class Tibia {
     });
   };
 
-  async players() {
+  public async players() {
     const { data } = await this._instance.get("/?subtopic=highscores");
     const $ = load(data);
 
