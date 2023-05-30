@@ -15,7 +15,7 @@ class Tibia {
     });
   };
 
-  public async players() {
+  public async players(): Promise<PlayerData[]> {
     const { data } = await this._instance.get("/?subtopic=highscores");
     const $ = load(data);
 
