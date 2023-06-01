@@ -2,7 +2,7 @@ const cards = document.getElementById("cards");
 
 async function api() {
   try {
-    const response = await fetch('http://localhost:8080/v1/tibia');
+    const response = await fetch('http://localhost:3000/v1/tibia');
     const { result } = await response.json();
     show(result);
   } catch (e) {

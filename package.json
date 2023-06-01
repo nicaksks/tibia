@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsup src",
+    "build": "npm install && tsup src",
     "start": "node dist/server.js",
     "dev:start": "tsup src && node dist/server.js",
     "dev": "tsx src/server.ts",
@@ -25,5 +25,8 @@
     "tsup": "^6.7.0",
     "tsx": "^3.12.7",
     "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=14.18" 
   }
 }
