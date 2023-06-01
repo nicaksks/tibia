@@ -9,31 +9,44 @@ body {
   height: 35rem;
 }
 
+.sites {
+  float: right;
+}
+
 .cards {
   display: inline-block;
   padding: 10px;
   margin: 5px;
   background-color: #f1f1f1;
   border-radius: 20px;
-  box-shadow: 0px 2px 4px blue;
+  box-shadow: 0px 2px 4px rgb(205, 123, 123);
   letter-spacing: 1.0px;
-  height: 20rem;
+  height: 28rem;
   overflow: hidden;
 }
 
 .avatar {
-  align-items: center;
   text-align: center;
+  background: none;
 }
 
-img {
-  background: none;
-  width: 100px;
-  height: 100px;
-  margin-right: 70px;
+table, th, td {
+  border: 1px solid;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+th, td {
+  padding: 1rem;
 }
 
 footer {
   text-align: center;
   color: white;
+}
+
+a {
+  text-decoration: none;
+  color: rgb(205, 123, 123);
+  letter-spacing: 1.0px;
 }

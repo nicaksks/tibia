@@ -2,49 +2,74 @@ const cards = document.getElementById("cards");
 
 async function api() {
   try {
-    const response = await fetch("http://localhost:3000/v1/tibia");
+    const response = await fetch('http://localhost:8080/v1/tibia');
     const { result } = await response.json();
     show(result);
   } catch (e) {
-    alert("Api offline.")
-    throw new Error("Api offline.");
+    alert('Api provavelmente está offline.');
+    throw new Error('Api offline.');
   };
 }
 
 function show(result) {
-  const playerName = "Dejair Invencivel";
-  let playerIndex = result.findIndex(player => player.name === playerName);
 
-  result.forEach((player, i) => {
-    const diffLevel = player.level - result[playerIndex].level;
-    const diffExperience = player.experience - result[playerIndex].experience;
+  const playerName = "Dejair Invencivel";
+
+  result.sort((a, b) => b.level - a.level);
+  result.forEach((player, ranking) => {
+
+    const level = player.level - result.find(p => p.name === playerName).level;
+    const experience = player.experience - result.find(p => p.name === playerName).experience;
 
     const card = `
-      <div class="cards">
-        <div class="avatar">
-          <img src="${outfits(player.name)}"><br>
-          ${player.name}<br> 
-        </div>
-        Ranking: ${i + 1}<br> Level: ${player.level}<br> Experiência: ${player.experience.toLocaleString()}
-    `;
-
-    if (i === playerIndex) return cards.innerHTML += card;
+    <div class="cards">
+      <div class="sites">
+      <a href="https://www.tibia.com/community/?name=${player.name}" target="_blank">
+        <img src="./imgs/icons/tibia.ico" style="width: 20px; height: 20px;">
+      </a>
+      <a href="https://guildstats.eu/character?nick=${player.name}" target="_blank">
+        <img src="./imgs/icons/guildstats.ico" style="width: 20px; height: 20px;">
+      </a>
+      </div>
+      <div class="avatar">
+        <img src="${outfits(player.name)}" style="width: 100px; height: 100px; margin-right: 40px;"><br>
+        ${player.name}<br> 
+    </div>
+      Ranking: ${ranking + 1}<br> Level: ${player.level}<br> Experiência: ${player.experience.toLocaleString()}`;
 
     const diffInfo = `
-      <hr>Diferença entre ${player.name} e ${playerName}
-      <li>Nível: ${diffLevel}<br>
-      <li>Experiência: ${diffExperience.toLocaleString()}</li>
-    `;
+    <hr>Diferença entre ${player.name} e ${playerName}
+      <li>Nível: ${level}<br>
+      <li>Experiência: ${experience.toLocaleString()}</li>`;
 
-    cards.innerHTML += card + diffInfo + '</div>';
+    const diffDaily = `
+    <hr>
+      <table>
+        <tr>
+          <th>Data</th>
+          <th>Exp</th>
+          <th>Nível</th>
+        </tr>
+        <tr>
+          <th>${player.daily.date.join('<br>')}</th>
+          <th>${player.daily.experience.join('<br>')}</th>
+          <th>${player.daily.level.join('<br>')}</th>
+        </tr>
+      </table>`;
+
+    if (player.name === playerName) {
+      return cards.innerHTML += card + diffDaily;
+    };
+
+    cards.innerHTML += card + diffInfo + diffDaily + '<div>';
   });
 }
 
 function outfits(playerName) {
   const outfit = {
-    "Goraca": "./imgs/goraca.png",
-    "Bobeek": "./imgs/bobeek.png",
-    "Dejair Invencivel": "./imgs/dejair.png"
+    "Goraca": "./imgs/characters/goraca.png",
+    "Bobeek": "./imgs/characters/bobeek.png",
+    "Dejair Invencivel": "./imgs/characters/dejair.png"
   };
   return outfit[playerName];
 };
