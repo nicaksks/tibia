@@ -1,13 +1,15 @@
 const cards = document.getElementById("cards");
+const loading = document.getElementById("loading");
+const footer = document.getElementsByTagName("footer")[0];
 
 async function api() {
   try {
-    const response = await fetch('http://localhost:3000/v1/tibia');
+    const response = await fetch('https://tibia.onrender.com/v1/tibia');
     const { result } = await response.json();
     show(result);
   } catch (e) {
     console.log(e)
-    //alert('Api provavelmente está offline.');
+    alert('Api provavelmente está offline.');
     throw new Error('Api offline.');
   };
 }
@@ -62,6 +64,8 @@ function show(result) {
       return cards.innerHTML += card + diffDaily;
     };
 
+    loading.style.display = 'none';
+    footer.style.display = 'block';
     cards.innerHTML += card + diffInfo + diffDaily + '<div>';
   });
 }
