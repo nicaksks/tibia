@@ -4,65 +4,73 @@ import PlayerData from '../interface/PlayerData';
 
 class Tibia {
 
-  public async players(): Promise<PlayerData[]> {
-    const { data } = await axios.get('https://www.tibia.com/community/?subtopic=highscores');
-    const $ = load(data);
+  private async request(player: string) {
+    try {
+      const { data } = await axios.get(`https://guildstats.eu/character?nick=${player}`);
+      return load(data);
+    } catch (e) {
+      throw new Error('Error getting character information: ' + player);
+    }
+  };
 
+  public async players(): Promise<PlayerData[]> {
+    const top3: string[] = ["Goraca", "Bobeek", "Dejair Invencivel"];
     const players: PlayerData[] = [];
 
-    const playerElements = $('table.TableContent tr').slice(1, 4);
+    for (const playerName of top3) {
+      const { charLevel, charExperience, date, experience, level }: DailyExperience = await this.dailyExperience(playerName);
 
-    await Promise.all(
-      playerElements.map(async (_, e) => {
-        const playerName = $(e).find('td:nth-child(2) a').text();
-        const dailyExp = await this.dailyExperience(playerName);
-
-        const player: PlayerData = {
-          name: playerName,
-          level: parseInt($(e).find('td:nth-child(5)').text()),
-          experience: parseInt($(e).find('td:nth-child(6)').text().replace(/,/g, '')),
-          daily: {
-            date: dailyExp.date,
-            experience: dailyExp.experience,
-            level: dailyExp.level
-          }
-        };
-        players.push(player);
-      })
-    );
-
+      const player: PlayerData = {
+        name: playerName,
+        level: parseInt(charLevel),
+        experience: parseInt(charExperience),
+        daily: {
+          date: date,
+          experience: experience,
+          level: level
+        }
+      };
+      players.push(player);
+    }
     return players;
   };
 
+  private async dailyExperience(player: string): Promise<DailyExperience> {
 
-  public async dailyExperience(player: string): Promise<{ date: string[], experience: string[], level: string[] }> {
-    const { data } = await axios.get(`https://guildstats.eu/character?nick=${player}`);
-    const $ = load(data);
+    const $ = await this.request(player);
 
+    const charInfo: string[] = [];
     const date: string[] = [];
     const experience: string[] = [];
-    const level: string[] = [];
+    const daily_level: string[] = [];
 
-    const table = $('table.shadow');
-    const rows = table.find('tr:not(:first-child)');
+    const rows = $('table.shadow').find('tr:not(:first-child)');
+    rows.each((_, e) => {
+      const info = $(e).find('td:nth-child(2)').text();
+      charInfo.push(info);
 
-    rows.each((_, e) => { 
       const dates = $(e).find('td:nth-child(1)').text();
       const experiences = $(e).find('td:nth-child(2)').text();
-      let levels = $(e).find('td div').html()?.replace(/[()]/g, '');
-      
+      let daily_levels = $(e).find('td div').html()?.replace(/[()]/g, '');
+
       if (dates.startsWith("2023-")) date.push(dates);
       if (experiences.startsWith('+')) experience.push(experiences);
-      if (!levels) levels = "0";
-      level.push(levels);
+      if (!daily_levels) daily_levels = "0";
+      daily_level.push(daily_levels);
     });
 
-    const firstLevels = level.slice(41);
+    const firstLevels = daily_level.slice(41);
+    let char = charInfo[6].split(' ');
+    if (!parseInt(char[0])) {
+      char = charInfo[7].split(' ');
+    };
 
     return {
+      charLevel: char[0],
+      charExperience: char[1].replace(/[~()exp,]/g, ''),
       date: date.splice(-5),
       experience: experience.splice(-5),
-      level: firstLevels.slice(0, -8)
+      level: firstLevels.slice(0, -8),
     }
   };
 

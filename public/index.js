@@ -6,7 +6,8 @@ async function api() {
     const { result } = await response.json();
     show(result);
   } catch (e) {
-    alert('Api provavelmente está offline.');
+    console.log(e)
+    //alert('Api provavelmente está offline.');
     throw new Error('Api offline.');
   };
 }
